@@ -28,24 +28,19 @@ const EmailHistory = mongoose.model("EmailHistory", HistorySchema, "email_histor
 app.post("/sendmail", async function(req, res) {
     const { subject, msg, emailList } = req.body;
 
-    const userEmail = process.env.SENDER_EMAIL || process.env.SMTP_USER;
-    const clientId = process.env.CLIENT_ID;
-    const clientSecret = process.env.CLIENT_SECRET;
-    const refreshToken = process.env.REFRESH_TOKEN;
+    const userEmail = process.env.SMTP_USER;
+    const userPass = process.env.SMTP_PASS;
 
-    if (!userEmail || !clientId || !clientSecret || !refreshToken) {
-        console.log("Error: Missing Google OAuth environment variables");
+    if (!userEmail || !userPass) {
+        console.log("Error: SMTP_USER or SMTP_PASS missing in environment variables");
         return res.send(false);
     }
 
     const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            type: "OAuth2",
             user: userEmail,
-            clientId: clientId,
-            clientSecret: clientSecret,
-            refreshToken: refreshToken
+            pass: userPass
         }
     });
 
