@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import axios from "axios"
 import * as XLSX from "xlsx"
 import "./App.css"
@@ -13,21 +13,6 @@ function App() {
     const [status, setStatus] = useState(false)
     const [alert, setAlert] = useState("")
     const [emailList, setEmailList] = useState([])
-    const [history, setHistory] = useState([])
-
-    useEffect(() => {
-        fetchHistory()
-    }, [])
-
-    function fetchHistory() {
-        axios.get(`${API_BASE_URL}/history`)
-            .then(response => {
-                setHistory(response.data)
-            })
-            .catch(error => {
-                console.log("Error fetching history:", error)
-            })
-    }
 
     function handleSubject(event) {
         setSubject(event.target.value)
@@ -80,11 +65,10 @@ function App() {
         })
         .then(() => {
             setStatus(false)
-            setAlert("Emails sent successfully and recorded in history!")
+            setAlert("Emails sent successfully!")
             setSubject("")
             setMsg("")
             setEmailList([])
-            fetchHistory()
         })
         .catch((error) => {
             console.log(error)
@@ -102,7 +86,7 @@ function App() {
             </div>
             <div className="bg-blue-800 text-white text-center">
                 <h2 className="font-medium px-5 py-2 text-sm md:text-base">
-                    Send multiple personalized emails at once and track your campaign history
+                    Send multiple personalized emails at once seamlessly
                 </h2>
             </div>
 
@@ -152,47 +136,6 @@ function App() {
                 {alert && (
                     <div className="mt-4 p-3 bg-white/90 rounded-md text-center font-medium text-blue-950 shadow">
                         {alert}
-                    </div>
-                )}
-            </div>
-
-            <div className="max-w-4xl mx-auto mt-10 bg-slate-800 rounded-lg shadow-xl p-6 text-white">
-                <h2 className="text-2xl font-bold mb-4 text-blue-400 border-b border-slate-700 pb-2">
-                    Campaign History Log
-                </h2>
-
-                {history.length === 0 ? (
-                    <p className="text-slate-400 text-center py-4">No email campaigns sent yet.</p>
-                ) : (
-                    <div className="overflow-x-auto">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-700 text-slate-300 text-sm">
-                                    <th className="py-3 px-4">Date</th>
-                                    <th className="py-3 px-4">Subject</th>
-                                    <th className="py-3 px-4">Recipients</th>
-                                    <th className="py-3 px-4">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {history.map((item, index) => (
-                                    <tr key={index} className="border-b border-slate-700/50 hover:bg-slate-700/30 text-sm">
-                                        <td className="py-3 px-4 text-slate-400">
-                                            {new Date(item.date).toLocaleString()}
-                                        </td>
-                                        <td className="py-3 px-4 font-medium">{item.subject}</td>
-                                        <td className="py-3 px-4">{item.recipientCount} emails</td>
-                                        <td className="py-3 px-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                                                item.status === 'Success' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'
-                                            }`}>
-                                                {item.status}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
                     </div>
                 )}
             </div>
