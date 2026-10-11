@@ -2,14 +2,14 @@ const express = require("express")
 const cors = require("cors");
 require("dotenv").config()
 const nodemailer = require("nodemailer")
-const mongoose = require("mongoose")
+const mongoose = require("mongoose");
 
 const app = express()
 app.use(cors());
 app.use(express.json())
 
 
-const mongoose = require("mongoose");
+
 
 const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/bulkmail";
 
