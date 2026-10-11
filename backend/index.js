@@ -35,7 +35,7 @@ app.post("/sendmail", async function (req, res) {
   const userEmail = process.env.SMTP_USER;
   const userPass = process.env.SMTP_PASS;
   const smtpHost = process.env.SMTP_HOST || "smtp-relay.brevo.com";
-  const smtpPort = Number(process.env.SMTP_PORT) || 587;
+  const smtpPort = Number(process.env.SMTP_PORT) || 465;
 
   if (!userEmail || !userPass) {
     console.log("Error: SMTP_USER or SMTP_PASS missing in environment variables");
@@ -46,7 +46,7 @@ app.post("/sendmail", async function (req, res) {
   const transporter = nodemailer.createTransport({
     host: smtpHost,
     port: smtpPort,
-    secure: false, // TLS via port 587
+    secure:smtpPort === 465,
     auth: {
       user: userEmail,
       pass: userPass
