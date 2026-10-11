@@ -9,16 +9,14 @@ app.use(cors());
 app.use(express.json())
 
 
-// Connect to MongoDB (for history storage)
-mongoose.connect("mongodb://127.0.0.1:27017/passkey")
-    .then(function() {
-        console.log("Connected to DB successfully")
-    })
-    .catch(function(err) {
-        console.log("DB Connection Error:", err)
-    })
+const mongoose = require("mongoose");
 
-// Define History Schema
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/bulkmail";
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("Connected to MongoDB successfully"))
+  .catch((err) => console.error("DB Connection Error:", err));
+
 const HistorySchema = new mongoose.Schema({
     subject: String,
     message: String,
@@ -29,7 +27,7 @@ const HistorySchema = new mongoose.Schema({
 })
 const EmailHistory = mongoose.model("EmailHistory", HistorySchema, "email_history")
 
-// Send Mail Route
+
 app.post("/sendmail", async function(req, res) {
     const { subject, msg, emailList } = req.body
 
@@ -60,7 +58,7 @@ app.post("/sendmail", async function(req, res) {
             console.log("Email sent successfully to: " + emailList[i])
         }
 
-        // Save Success History
+     
         await EmailHistory.create({
             subject: subject,
             message: msg,
@@ -73,7 +71,7 @@ app.post("/sendmail", async function(req, res) {
     } catch (error) {
         console.log("Nodemailer Error Details:", error)
 
-        // Save Failed History
+       
         await EmailHistory.create({
             subject: subject,
             message: msg,
@@ -86,7 +84,7 @@ app.post("/sendmail", async function(req, res) {
     }
 })
 
-// Fetch History Route
+
 app.get("/history", async function(req, res) {
     try {
         const history = await EmailHistory.find().sort({ date: -1 })
