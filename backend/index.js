@@ -1,12 +1,13 @@
 const express = require("express")
-const cors = require("cors")
+const cors = require("cors");
 require("dotenv").config()
 const nodemailer = require("nodemailer")
 const mongoose = require("mongoose")
 
 const app = express()
+app.use(cors());
 app.use(express.json())
-app.use(cors())
+
 
 // Connect to MongoDB (for history storage)
 mongoose.connect("mongodb://127.0.0.1:27017/passkey")
