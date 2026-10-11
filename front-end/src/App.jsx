@@ -7,7 +7,7 @@ function App() {
    
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "http://localhost:5000"
-        : "https://your-render-backend-url.onrender.com";
+        : "https://bulkmail-flaz.onrender.com";
 
     const [subject, setSubject] = useState("")
     const [msg, setMsg] = useState("")
