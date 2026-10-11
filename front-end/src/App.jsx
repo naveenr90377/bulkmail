@@ -6,7 +6,7 @@ import "./App.css"
 function App() {
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "http://localhost:5000"
-        : "https://bulkmail-flaz.onrender.com";
+        : "https://bulkmail-production-0752.up.railway.app";
 
     const [subject, setSubject] = useState("")
     const [msg, setMsg] = useState("")
