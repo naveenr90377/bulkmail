@@ -87,6 +87,8 @@ app.get("/history", async function(req, res) {
     }
 });
 
-app.listen(5000, function() {
-    console.log("Server started on port 5000...");
+// Railway dynamically assigns a port, so use process.env.PORT
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, function() {
+    console.log(`Server started on port ${PORT}...`);
 });
