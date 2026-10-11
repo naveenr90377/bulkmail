@@ -4,6 +4,11 @@ import * as XLSX from "xlsx"
 import "./App.css"
 
 function App() {
+   
+    const API_BASE_URL = window.location.hostname === "localhost"
+        ? "http://localhost:5000"
+        : "https://your-render-backend-url.onrender.com";
+
     const [subject, setSubject] = useState("")
     const [msg, setMsg] = useState("")
     const [status, setStatus] = useState(false)
@@ -16,21 +21,21 @@ function App() {
     }, [])
 
     function fetchHistory() {
-        axios.get("http://localhost:5000/history")
-            .then(response => {
-                setHistory(response.data)
+        axios.get(`${API_BASE_URL}/history`)
+     .then(response => {
+      setHistory(response.data)
             })
             .catch(error => {
-                console.log("Error fetching history:", error)
+            console.log("Error fetching history:", error)
             })
     }
 
     function handleSubject(event) {
-        setSubject(event.target.value)
+     setSubject(event.target.value)
     }
 
     function handlemsg(event) {
-        setMsg(event.target.value)
+     setMsg(event.target.value)
     }
 
     function handlefile(event) {
@@ -39,39 +44,35 @@ function App() {
 
         const reader = new FileReader()
         reader.onload = function(e) {
-            const data = new Uint8Array(e.target.result)
-            const workbook = XLSX.read(data, { type: "array" })
-            const sheetName = workbook.SheetNames[0]
-            const worksheet = workbook.Sheets[sheetName]
+        const data = new Uint8Array(e.target.result)
+        const workbook = XLSX.read(data, { type: "array" })
+        const sheetName = workbook.SheetNames[0]
+        const worksheet = workbook.Sheets[sheetName]
             
-            // Convert sheet to JSON array of objects or raw arrays
             const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 })
-            
-            // Flatten and filter out non-email or empty entries
             let extractedEmails = []
             jsonRows.forEach(row => {
+
                 row.forEach(cell => {
+
                     if (cell && typeof cell === "string" && cell.includes("@")) {
                         extractedEmails.push(cell.trim())
                     }
                 })
             })
 
-            console.log("Extracted emails:", extractedEmails)
             setEmailList(extractedEmails)
         }
         reader.readAsArrayBuffer(file)
     }
-
     function send() {
         if (!subject || !msg || emailList.length === 0) {
             setAlert("Please enter a subject, message, and upload an Excel file containing valid emails.")
             return
         }
-
         setStatus(true)
         setAlert("")
-        axios.post("http://localhost:5000/sendmail", {
+        axios.post(`${API_BASE_URL}/sendmail`, {
             subject: subject,
             msg: msg,
             emailList: emailList
@@ -90,10 +91,9 @@ function App() {
             setAlert("Email sending failed! Check backend terminal for details.")
         })
     }
-
     return (
         <div className="min-h-screen bg-slate-900 pb-10">
-            {/* Header */}
+   
             <div className="bg-blue-950 text-white text-center shadow-md">
                 <h1 className="text-3xl font-bold px-5 py-4">
                     Bulk Mail Application Dashboard
@@ -105,7 +105,6 @@ function App() {
                 </h2>
             </div>
 
-            {/* Main Form Container */}
             <div className="max-w-3xl mx-auto mt-8 bg-blue-500 rounded-lg shadow-xl p-6 text-black">
                 <h2 className="text-xl font-bold text-white mb-4 text-center">Compose New Campaign</h2>
                 
@@ -133,12 +132,10 @@ function App() {
                         className="text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-950 file:text-white hover:file:bg-blue-900 cursor-pointer"
                     />
                 </div>
-
                 <div className="flex justify-between items-center text-white font-medium mb-4">
                     <p>Total Emails Selected:</p>
                     <span className="bg-blue-950 px-3 py-1 rounded-full text-sm">{emailList.length}</span>
                 </div>
-
                 <div className="text-center">
                     <button
                         onClick={send}
@@ -156,7 +153,6 @@ function App() {
                 )}
             </div>
 
-            {/* Email History Section */}
             <div className="max-w-4xl mx-auto mt-10 bg-slate-800 rounded-lg shadow-xl p-6 text-white">
                 <h2 className="text-2xl font-bold mb-4 text-blue-400 border-b border-slate-700 pb-2">
                     Campaign History Log
@@ -167,34 +163,33 @@ function App() {
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="border-b border-slate-700 text-slate-300 text-sm">
-                                    <th className="py-3 px-4">Date</th>
-                                    <th className="py-3 px-4">Subject</th>
-                                    <th className="py-3 px-4">Recipients</th>
-                                    <th className="py-3 px-4">Status</th>
-                                </tr>
-                            </thead>
+         <thead>
+                  <tr className="border-b border-slate-700 text-slate-300 text-sm">
+                  <th className="py-3 px-4">Date</th>
+                 <th className="py-3 px-4">Subject</th>
+                 <th className="py-3 px-4">Recipients</th>
+                <th className="py-3 px-4">Status</th> </tr>
+        </thead>
                             <tbody>
                                 {history.map((item, index) => (
                                     <tr key={index} className="border-b border-slate-700/50 hover:bg-slate-700/30 text-sm">
-                                        <td className="py-3 px-4 text-slate-400">
-                                            {new Date(item.date).toLocaleString()}
-                                        </td>
+                              <td className="py-3 px-4 text-slate-400">
+                        {new Date(item.date).toLocaleString()}
+                      </td>
                                         <td className="py-3 px-4 font-medium">{item.subject}</td>
-                                        <td className="py-3 px-4">{item.recipientCount} emails</td>
+                        <td className="py-3 px-4">{item.recipientCount} emails</td>
                                         <td className="py-3 px-4">
-                                            <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                                                item.status === 'Success' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'
+          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
+             item.status === 'Success' ? 'bg-green-900 text-green-200' : 'bg-red-900 text-red-200'
                                             }`}>
-                                                {item.status}
+                            {item.status}
                                             </span>
-                                        </td>
+                              </td>
                                     </tr>
                                 ))}
                             </tbody>
-                        </table>
-                    </div>
+       </table>
+           </div>
                 )}
             </div>
         </div>
